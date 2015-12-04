@@ -1,1 +1,0 @@
-{"rsync":{"/home/vagrant/sync":{"type":"rsync","guestpath":"/home/vagrant/sync","hostpath":"/Users/kamjar.gerami/Documents/haxx/vagrant/leo","disabled":false,"owner":"vagrant","group":"vagrant"}}}
