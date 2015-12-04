@@ -10,7 +10,9 @@ nodes = [
   { :hostname => "lb-01.#{domain}",     :memory => "512", :ip => "192.168.2.10"},
   { :hostname => "webapp-01.#{domain}", :memory => "512", :ip => "192.168.2.21"},
   { :hostname => "webapp-02.#{domain}", :memory => "512", :ip => "192.168.2.22"},
-  { :hostname => "webapp-03.#{domain}", :memory => "512", :ip => "192.168.2.23"}
+  { :hostname => "webapp-03.#{domain}", :memory => "512", :ip => "192.168.2.23"},
+  { :hostname => "webapp-04.#{domain}", :memory => "512", :ip => "192.168.2.24"},
+  { :hostname => "webapp-05.#{domain}", :memory => "512", :ip => "192.168.2.25"},
 ]
 
 groups = {
@@ -52,18 +54,6 @@ Vagrant.configure(2) do |config|
           vb.customize ["modifyvm", :id, "--memory", memory, "--name", hostname]
         end
 
-        # if we want to manage hosts ip and resolver via vagrant-hostmanager plugin
-        if Vagrant.has_plugin?("vagrant-hostmanager")
-          config.vm.provision :hostmanager do |manager|
-            manager.hostmanager.enabled = true
-            manager.hostmanager.manage_host = true
-            manager.hostmanager.ignore_private_ip = false
-            manager.hostmanager.include_offline = true
-           end
-        else
-          warn "vagrant-hostmanager is not installed! run vagrant plugin install vagrant-hostmanager\nif you want /etc/hosts to be managed by vagrant"
-        end
- 
         # ansible provisioner
         config.vm.provision :ansible do |ansible|
           ansible.playbook = "provisioning/site.yml"
