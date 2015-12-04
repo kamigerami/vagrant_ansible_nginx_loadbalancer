@@ -1,0 +1,9 @@
+---
+- name: Install EPEL
+  yum: name=epel-release state=installed
+
+- name: Install Nginx
+  yum: name=nginx state=installed
+
+#- name: Run and enable Nginx
+#  service: name=nginx state=running enabled=yes
