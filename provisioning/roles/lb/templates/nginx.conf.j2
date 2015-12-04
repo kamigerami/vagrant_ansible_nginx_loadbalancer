@@ -9,9 +9,11 @@ events {
 
 http {
     upstream webapp {
-      # for hostname, ip in hostname_ip.iteritems() 
-      #   server ;
-      # endfor 
+    {% for host in ip%}
+      {% if host.ip != "192.168.2.10" %}
+      server  {{ host.ip }};
+      {% endif %}
+    {% endfor %}
     }
 
     server {

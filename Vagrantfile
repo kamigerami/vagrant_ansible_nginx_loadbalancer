@@ -19,21 +19,21 @@ groups = {
     "all_groups:children" => ["lb", "webapp"], 
 }
 
-# generate extra_vars
-hostname_ip = { }
+# Empty hash to generate extra_vars dynamically
+hostname_ip = Hash.new { |hash, key| hash[key] = [] }
 
 
 Vagrant.configure(2) do |config|
   
   nodes.each do |node|
-    # set the vars
+    # Set the vars
     hostname = node[:hostname]
     memory = node[:memory]
     ip = node[:ip]
     
-    # Generate the extra_vars with hostname => ip
-    hostname_ip[hostname] = ip
-
+    # Add the extra_vars with hostname => ip
+    hostname_ip[:ip] << node
+    #
     # Workaround for #Can't use alphanumeric patterns for box names in ansible.groups #3539 bug https://github.com/mitchellh/vagrant/issues/3539
     # Until my PR is merged : https://github.com/mitchellh/vagrant/pull/6639
     # create groups
