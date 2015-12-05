@@ -12,33 +12,34 @@
 #!bash
 $ tree
 .
-â”œâ”€â”€ Vagrantfile
-â”œâ”€â”€ loadtest.py
-â””â”€â”€ provisioning
-    â”œâ”€â”€ common.yml
-    â”œâ”€â”€ lb.yml
-    â”œâ”€â”€ roles
-    â”‚Â Â  â”œâ”€â”€ common
-    â”‚Â Â  â”‚Â Â  â””â”€â”€ tasks
-    â”‚Â Â  â”‚Â Â      â””â”€â”€ main.yml
-    â”‚Â Â  â”œâ”€â”€ lb
-    â”‚Â Â  â”‚Â Â  â”œâ”€â”€ handlers
-    â”‚Â Â  â”‚Â Â  â”‚Â Â  â””â”€â”€ main.yml
-    â”‚Â Â  â”‚Â Â  â”œâ”€â”€ tasks
-    â”‚Â Â  â”‚Â Â  â”‚Â Â  â””â”€â”€ main.yml
-    â”‚Â Â  â”‚Â Â  â””â”€â”€ templates
-    â”‚Â Â  â”‚Â Â      â””â”€â”€ nginx.conf.j2
-    â”‚Â Â  â””â”€â”€ webapp
-    â”‚Â Â      â”œâ”€â”€ handlers
-    â”‚Â Â      â”‚Â Â  â””â”€â”€ main.yml
-    â”‚Â Â      â”œâ”€â”€ tasks
-    â”‚Â Â      â”‚Â Â  â””â”€â”€ main.yml
-    â”‚Â Â      â””â”€â”€ templates
-    â”‚Â Â          â””â”€â”€ nginx.j2
-    â”œâ”€â”€ site.yml
-    â””â”€â”€ webapp.yml
+├── README.md
+├── Vagrantfile
+├── loadtest.py
+└── provisioning
+    ├── common.yml
+    ├── lb.yml
+    ├── roles
+    │   ├── common
+    │   │   └── tasks
+    │   │       └── main.yml
+    │   ├── lb
+    │   │   ├── handlers
+    │   │   │   └── main.yml
+    │   │   ├── tasks
+    │   │   │   └── main.yml
+    │   │   └── templates
+    │   │       └── nginx.conf.j2
+    │   └── webapp
+    │       ├── handlers
+    │       │   └── main.yml
+    │       ├── tasks
+    │       │   └── main.yml
+    │       └── templates
+    │           └── nginx.j2
+    ├── site.yml
+    └── webapp.yml
 
-12 directories, 13 files
+12 directories, 14 files
 ```
 
 ### What will this repository install? ###
