@@ -1,7 +1,5 @@
 ---
 
-- name: reload nginx
-  service: name=nginx state=reloaded enabled=yes
+- name: restart nginx
+  service: name=nginx state=restarted enabled=yes
   ignore_errors: yes
-  delegate_to: "{{ item }}"
-  with_items: groups['lb']

@@ -21,6 +21,10 @@ http {
 
         location / {
             proxy_pass http://webapp;
+            expires           0;
+            add_header        Cache-Control private;
+            sendfile  off;
+
         }
     }   
 }
