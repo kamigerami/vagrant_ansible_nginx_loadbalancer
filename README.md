@@ -9,7 +9,6 @@
 #### Repository overview ####
 
 ```
-#!bash
 $ tree
 .
 ├── README.md
