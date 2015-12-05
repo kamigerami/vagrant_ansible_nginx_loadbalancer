@@ -51,14 +51,14 @@ class Agent(Thread):
         for i in range(runtime):
             conn = httplib.HTTPConnection(host)
             conn.request('GET', "/", headers={'cache-control':'no-cache'})
-            resp_host = conn.getresponse().read() #getheader("X-Served-By")
+            resp_host = conn.getresponse().read()
             server_hit_count.append(resp_host)
         for hosts in server_hit_count:
             counter[hosts] += 1
         thread_count += 1
         for srv, cnt in counter.iteritems():
             print "Thread nr: %d" %(thread_count)
-            print "Host: %s" %(srv.rstrip())
+            print "%s" %(srv.rstrip())
             print "Hit counter: %d" %(cnt)
             print ""
 
