@@ -1,5 +1,5 @@
 ---
 
 - name: reload nginx
-  service: name=nginx state=reload enabled=yes
+  service: name=nginx state=reloaded enabled=yes
   ignore_errors: yes

@@ -3,8 +3,10 @@
 #
 Vagrant.require_version ">= 1.7.2"
 
-# Domainname
+# vars
 domain = "example.com"
+hostname_lb = "lb" # hostname for lb
+hostname_backend = "webapp" # hostname for backend servers 
 
 # Nodes 
 # Available parameters : 
@@ -13,17 +15,17 @@ domain = "example.com"
 #
 # Add new nodes here
 nodes = [
-  { :hostname => "lb-01.#{domain}", :memory => "1024", :run => "always", :ip => "192.168.50.10"},
-  { :hostname => "webapp-01.#{domain}", :ip => "192.168.50.21"},
-  { :hostname => "webapp-02.#{domain}", :ip => "192.168.50.22"},
-  { :hostname => "webapp-03.#{domain}", :ip => "192.168.50.23"},
+  { :hostname => "#{hostname_lb}-01.#{domain}", :memory => "1024", :run => "always", :ip => "192.168.50.10"},
+  { :hostname => "#{hostname_backend}-01.#{domain}", :ip => "192.168.50.21"},
+  { :hostname => "#{hostname_backend}-02.#{domain}", :ip => "192.168.50.22"},
+  { :hostname => "#{hostname_backend}-03.#{domain}", :ip => "192.168.50.23"},
 ]
 
 groups = {
-    "lb" => ["lb-01.#{domain}"],
+    "lb" => ["#{hostname_lb}-01.#{domain}"],
     "webapp" => [], # can't use webapp-[0:3].example.com host range pattern due to bug https://github.com/mitchellh/vagrant/issues/3539 // PR merged (Vagrant 1.8).
-    "all_groups:children" => ["lb", "webapp"], 
-}
+    "all_groups:children" => ["#{hostname_lb}", "#{hostname_backend}"], 
+} # we will work around this limited feature by pushing hostnames called
 
 # Empty hash to generate extra_vars dynamically
 hostname_ip = Hash.new { |hash, key| hash[key] = [] }
@@ -45,8 +47,8 @@ Vagrant.configure(2) do |config|
     # PR is merged ( vagrant 1.8) : https://github.com/mitchellh/vagrant/pull/6639
 
     # create groups
-    if hostname.include? "webapp"
-      groups["webapp"].push(hostname)
+    if hostname.include? "#{hostname_backend}"
+      groups["#{hostname_backend}"].push(hostname)
     end
       
       config.vm.box = "centos/7"
@@ -54,18 +56,19 @@ Vagrant.configure(2) do |config|
       config.vm.define hostname do |config|
         config.vm.hostname = hostname
         config.vm.network :private_network, ip: ip
-
+        config.ssh.insert_key = false # do not generate new secure keys (faster but unsecure)
 
         config.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--memory", memory, "--name", hostname]
         end
 
         # ansible provisioner
-        config.vm.provision :ansible, run: run do |ansible|
+        config.vm.provision :ansible, run: run do |ansible| # change :run variable to always or once
           ansible.playbook = "provisioning/site.yml"
-          ansible.groups = groups
+          ansible.limit = 'all' # run playbook on all hosts always
+          ansible.groups = groups # use groups in dynamic inventory_file
           ansible.sudo = true
-          ansible.extra_vars = hostname_ip
+          ansible.extra_vars = hostname_ip # send extra_vars based on hostname ip of hosts
         end
 
       end

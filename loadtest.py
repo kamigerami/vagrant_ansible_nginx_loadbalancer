@@ -5,10 +5,10 @@
 #
 import httplib, argparse
 from threading import Thread
-from collections import defaultdict
+from collections import defaultdict # requires python 2.7
 
 def get_args():
-    parser = argparse.ArgumentParser(description='Script runs threaded requests against given server n number of times')
+    parser = argparse.ArgumentParser(description='Script runs x threaded requests against given server n number of times')
     # argument options
     parser.add_argument(
         '-s', '--server', help='Server name or Ip', required=True)

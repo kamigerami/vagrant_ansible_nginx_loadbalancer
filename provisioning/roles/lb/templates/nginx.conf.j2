@@ -11,7 +11,7 @@ http {
     upstream webapp {
     {% for host in ip%}
       {% if host.ip != ansible_eth1.ipv4.address %}
-      server  {{ host.ip }};
+      server  {{ host.ip }} fail_timeout=1;
       {% endif %}
     {% endfor %}
     }
@@ -22,8 +22,7 @@ http {
         location / {
             proxy_pass http://webapp;
             expires           0;
-            add_header        Cache-Control private;
-            sendfile  off;
+            proxy_connect_timeout 5;
 
         }
     }   
