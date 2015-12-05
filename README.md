@@ -1,12 +1,12 @@
-# Dynamic Vagrant + Ansible provisioner #
+### Dynamic Vagrant + Ansible provisioner ###
 
-### Requirements ###
+#### Requirements ####
 
 * Vagrant version: 1.7.4
 * Ansible version: 1.9.1
 * Python: 2.7.10
 
-### Repository overview ###
+#### Repository overview ####
 
 ```
 #!bash
@@ -42,20 +42,20 @@ $ tree
 12 directories, 14 files
 ```
 
-### What will this repository install? ###
+#### What will this repository install? ###
 
 * Centos 7
 * One load balancer using nginx-1.6.3 (default round-robin upstream configuration)
 * Three back-end webserver nodes with nginx (Expandable to any number of webserver nodes)
 * loadtest.py script (minimum Python 2.7) that runs requests against nodes to receive response back from the website 
 
-### What will it not do? ###
+#### What will it not do? ###
 
 * SSL Termination
 * Clean secure nginx configuration (most of the default nginx config is on the backend servers) 
 * Secure vagrant keys (config.ssh.insert_key = false)
 
-### How do I get set up? ###
+#### How do I get set up? ###
 
 ```
 #!bash
@@ -64,7 +64,7 @@ git clone https://kamger@bitbucket.org/kamger/leo.git
 vagrant up
 ```
 
-Edit the Vagrantfile if you want to change:
+###### Edit the Vagrantfile if you want to change:
 
 * Domain name
 * Hostnames
@@ -73,8 +73,6 @@ Edit the Vagrantfile if you want to change:
 * Add more nodes ( Ansible will update and reload the nginx configuration for the loadbalancer)
 
 ```
-#!ruby
-
 # vars
 domain = "example.com"
 hostname_lb = "lb" # hostname for lb
@@ -97,16 +95,15 @@ groups = {
     "lb" => ["#{hostname_lb}-01.#{domain}"],
     "webapp" => [], # can't use webapp-[0:3].example.com host range pattern due to bug https://github.com/mitchellh/vagrant/issues/3539 // PR merged (Vagrant 1.8).
     "all_groups:children" => ["#{hostname_lb}", "#{hostname_backend}"],
-} # we will work around this limited feature by pushing hostnames called
+} # we will work around this limited feature by pushing hostnames
 
 ```
-### How can I test the Load ###
+#### How can I test the Load ####
 
 * loadtest.py - Run this script with the available parameters below
 * curl - Just run a plain old curl for loop
 
 ```
-#!python
 $ ./loadtest.py --help
 usage: loadtest.py [-h] -s SERVER [-n NUMBER]
 
@@ -120,11 +117,9 @@ optional arguments:
                         Number of iterations to run (default=5)
 ```
 
-Output from running loadtest:
+#####Output from running loadtest:#####
 
 ```
-#!python
-
 $ ./loadtest.py -s 192.168.50.10 -n 10
 
 Hostname: webapp-02.example.com
@@ -140,7 +135,6 @@ Ip: 192.168.50.23
 Hit counter: 4
 ```
 ```
-#!bash
 $ for i in $(seq 1 20); do curl --progress -I 192.168.50.10 | awk '/X-Served-By:/ { print "Node: ", $2 }'; done
 
 Node:  webapp-03.example.com
@@ -155,4 +149,3 @@ Node:  webapp-01.example.com
 
 Node:  webapp-02.example.com
 ```
-]
