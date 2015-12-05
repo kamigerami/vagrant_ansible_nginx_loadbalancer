@@ -47,11 +47,13 @@ $ tree
 * Centos 7
 * One load balancer using nginx-1.6.3 (default round-robin upstream configuration)
 * Three back-end webserver nodes with nginx (Expandable to any number of webserver nodes)
-* loadtest.py script (minimum Python 2.7) that runs threaded requests against nodes to receive response back with their -X header
+* loadtest.py script (minimum Python 2.7) that runs requests against nodes to receive response back from the website 
 
-### What won't it install ###
+### What will it not do? ###
 
 * SSL Termination
+* Clean secure nginx configuration (most of the default nginx config is on the backend servers) 
+* Secure vagrant keys (config.ssh.insert_key = false)
 
 ### How do I get set up? ###
 
@@ -64,7 +66,8 @@ vagrant up
 
 Edit the Vagrantfile if you want to change:
 
-* Domain
+* Domain name
+* Hostnames
 * Which nodes to always run provisioner on
 * Memory
 * Add more nodes ( Ansible will update and reload the nginx configuration for the loadbalancer)
@@ -72,8 +75,10 @@ Edit the Vagrantfile if you want to change:
 ```
 #!ruby
 
-
+# vars
 domain = "example.com"
+hostname_lb = "lb" # hostname for lb
+hostname_backend = "webapp" # hostname for backend servers
 
 # Nodes
 # Available parameters :
@@ -82,19 +87,17 @@ domain = "example.com"
 #
 # Add new nodes here
 nodes = [
-  { :hostname => "lb-01.#{domain}", :memory => "1024", :run => "always", :ip => "192.168.2.10"},
-  { :hostname => "webapp-01.#{domain}", :ip => "192.168.2.21"},
-  { :hostname => "webapp-02.#{domain}", :ip => "192.168.2.22"},
-  { :hostname => "webapp-03.#{domain}", :ip => "192.168.2.23"},
-  { :hostname => "webapp-04.#{domain}", :ip => "192.168.2.24"},
-  { :hostname => "webapp-05.#{domain}", :ip => "192.168.2.25"},
+  { :hostname => "#{hostname_lb}-01.#{domain}", :memory => "1024", :run => "always", :ip => "192.168.50.10"},
+  { :hostname => "#{hostname_backend}-01.#{domain}", :ip => "192.168.50.21"},
+  { :hostname => "#{hostname_backend}-02.#{domain}", :ip => "192.168.50.22"},
+  { :hostname => "#{hostname_backend}-03.#{domain}", :ip => "192.168.50.23"},
 ]
 
 groups = {
-    "lb" => ["lb-01.#{domain}"],
-    "webapp" => [], # can't use webapp-[0:3].example.com host range pattern due to bug https://github.com/mitchellh/vagrant/issues/3539 // Pull Request Added.
-    "all_groups:children" => ["lb", "webapp"],
-}
+    "lb" => ["#{hostname_lb}-01.#{domain}"],
+    "webapp" => [], # can't use webapp-[0:3].example.com host range pattern due to bug https://github.com/mitchellh/vagrant/issues/3539 // PR merged (Vagrant 1.8).
+    "all_groups:children" => ["#{hostname_lb}", "#{hostname_backend}"],
+} # we will work around this limited feature by pushing hostnames called
 
 ```
 ### Testing Load ###
@@ -104,9 +107,9 @@ groups = {
 ```
 #!python
 $ ./loadtest.py --help
-usage: loadtest.py [-h] -s SERVER [-n NUMBER] [-t THREAD]
+usage: loadtest.py [-h] -s SERVER [-n NUMBER]
 
-Script runs threaded requests against given server n number of times
+Script runs requests against given server n number of times
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -114,8 +117,6 @@ optional arguments:
                         Server name or Ip
   -n NUMBER, --number NUMBER
                         Number of iterations to run (default=5)
-  -t THREAD, --thread THREAD
-                        Thread count (default=2)
 ```
 
 Output from running loadtest:
@@ -123,26 +124,17 @@ Output from running loadtest:
 ```
 #!python
 
-$ ./loadtest.py -s 192.168.2.10 -n 5 -t 2
+$ ./loadtest.py -s 192.168.50.10 -n 10
 
-$ ./loadtest.py -s 192.168.2.10
-Thread nr: 1
-Host: webapp-05.example.com
-Hit counter: 1
+Hostname: webapp-02.example.com
+Ip: 192.168.50.22
+Hit counter: 3
 
-Thread nr: 1
-Host: webapp-02.example.com
-Hit counter: 1
+Hostname: webapp-01.example.com
+Ip: 192.168.50.21
+Hit counter: 3
 
-Thread nr: 1
-Host: webapp-04.example.com
-Hit counter: 1
-
-Thread nr: 1
-Host: webapp-01.example.com
-Hit counter: 1
-
-Thread nr: 1
-Host: webapp-03.example.com
-Hit counter: 1
+Hostname: webapp-03.example.com
+Ip: 192.168.50.23
+Hit counter: 4
 ```

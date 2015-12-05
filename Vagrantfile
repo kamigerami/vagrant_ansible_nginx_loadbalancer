@@ -10,7 +10,7 @@ hostname_backend = "webapp" # hostname for backend servers
 
 # Nodes 
 # Available parameters : 
-# :run => "once" || "always" (blank defaults to once)
+# :run => "once" || "always" (blank defaults to always)
 # :memory => "1024" || "512" is the default value
 #
 # Add new nodes here
