@@ -10,7 +10,7 @@ events {
 http {
     upstream webapp {
     {% for host in ip%}
-      {% if host.ip != "192.168.2.10" %}
+      {% if host.ip != ansible_eth1.ipv4.address %}
       server  {{ host.ip }};
       {% endif %}
     {% endfor %}

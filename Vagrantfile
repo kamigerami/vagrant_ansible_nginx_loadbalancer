@@ -1,6 +1,8 @@
 # by Kami Gerami 
 #
 #
+Vagrant.require_version ">= 1.7.2"
+
 # Domainname
 domain = "example.com"
 
@@ -11,17 +13,15 @@ domain = "example.com"
 #
 # Add new nodes here
 nodes = [
-  { :hostname => "lb-01.#{domain}",     :run => "always", :ip => "192.168.2.10"},
-  { :hostname => "webapp-01.#{domain}", :ip => "192.168.2.21"},
-  { :hostname => "webapp-02.#{domain}", :ip => "192.168.2.22"},
-  { :hostname => "webapp-03.#{domain}", :ip => "192.168.2.23"},
-  { :hostname => "webapp-04.#{domain}", :ip => "192.168.2.24"},
-  { :hostname => "webapp-05.#{domain}", :ip => "192.168.2.25"},
+  { :hostname => "lb-01.#{domain}", :memory => "1024", :run => "always", :ip => "192.168.50.10"},
+  { :hostname => "webapp-01.#{domain}", :ip => "192.168.50.21"},
+  { :hostname => "webapp-02.#{domain}", :ip => "192.168.50.22"},
+  { :hostname => "webapp-03.#{domain}", :ip => "192.168.50.23"},
 ]
 
 groups = {
     "lb" => ["lb-01.#{domain}"],
-    "webapp" => [], # can't use webapp-[0:3].example.com host range pattern due to bug https://github.com/mitchellh/vagrant/issues/3539 // Pull Request Added.
+    "webapp" => [], # can't use webapp-[0:3].example.com host range pattern due to bug https://github.com/mitchellh/vagrant/issues/3539 // PR merged (Vagrant 1.8).
     "all_groups:children" => ["lb", "webapp"], 
 }
 
@@ -36,13 +36,14 @@ Vagrant.configure(2) do |config|
     hostname = node[:hostname]
     ip = node[:ip]
     memory = node[:memory] || "512" # set 512 as default if nothing else is set
-    run = node[:run] || "once" # set to provision once if nothing else is set
+    run = node[:run] || "always" # set to provision always if nothing else is set
 
     # Add the extra_vars with hostname => ip
     hostname_ip[:ip] << node
     #
     # Workaround for #Can't use alphanumeric patterns for box names in ansible.groups #3539 bug https://github.com/mitchellh/vagrant/issues/3539
-    # Until my PR is merged : https://github.com/mitchellh/vagrant/pull/6639
+    # PR is merged ( vagrant 1.8) : https://github.com/mitchellh/vagrant/pull/6639
+
     # create groups
     if hostname.include? "webapp"
       groups["webapp"].push(hostname)
