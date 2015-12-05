@@ -2,9 +2,9 @@
 
 #### Requirements ####
 
-* Vagrant version: 1.7.4
-* Ansible version: 1.9.1
-* Python: 2.7.10
+* Vagrant version: 1.7.x
+* Ansible version: 1.9.x
+* Python: 2.7.x
 
 #### Repository overview ####
 
@@ -41,18 +41,18 @@ $ tree
 12 directories, 14 files
 ```
 
-#### What will this repository install? ###
+#### What will it install? ###
 
 * Centos 7
 * One load balancer using nginx-1.6.3 (default round-robin upstream configuration)
 * Three back-end webserver nodes with nginx (Expandable to any number of webserver nodes)
 * loadtest.py script (minimum Python 2.7) that runs requests against nodes to receive response back from the website 
 
-#### What will it not do? ###
+#### What will it NOT install? ###
 
-* SSL Termination
-* Clean secure nginx configuration (most of the default nginx config is on the backend servers) 
-* Secure vagrant keys (config.ssh.insert_key = false)
+* SSL
+* Clean and secure nginx configuration (backend servers use default config + minor changes) 
+* Secure vagrant keys (config.ssh.insert_key = false - vagrant won't generate new ones)
 
 #### How do I get set up? ###
 
