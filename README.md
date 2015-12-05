@@ -100,9 +100,10 @@ groups = {
 } # we will work around this limited feature by pushing hostnames called
 
 ```
-### Testing Load ###
+### How can I test the Load ###
 
 * loadtest.py - Run this script with the available parameters below
+* curl - Just run a plain old curl for loop
 
 ```
 #!python
@@ -138,3 +139,20 @@ Hostname: webapp-03.example.com
 Ip: 192.168.50.23
 Hit counter: 4
 ```
+```
+#!bash
+$ for i in $(seq 1 20); do curl --progress -I 192.168.50.10 | awk '/X-Served-By:/ { print "Node: ", $2 }'; done
+
+Node:  webapp-03.example.com
+
+Node:  webapp-01.example.com
+
+Node:  webapp-02.example.com
+
+Node:  webapp-03.example.com
+
+Node:  webapp-01.example.com
+
+Node:  webapp-02.example.com
+```
+]
