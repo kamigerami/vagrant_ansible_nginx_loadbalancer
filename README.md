@@ -57,9 +57,7 @@ $ tree
 #### How do I get set up? ###
 
 ```
-#!bash
-
-git clone https://kamger@bitbucket.org/kamger/leo.git
+git clone https://github.com/kamigerami/vagrant_ansible_nginx_loadbalancer.git
 vagrant up
 ```
 
