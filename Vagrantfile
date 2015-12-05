@@ -5,14 +5,18 @@
 domain = "example.com"
 
 # Nodes 
+# Available parameters : 
+# :run => "once" || "always" (blank defaults to once)
+# :memory => "1024" || "512" is the default value
+#
 # Add new nodes here
 nodes = [
-  { :hostname => "lb-01.#{domain}",     :memory => "512", :ip => "192.168.2.10"},
-  { :hostname => "webapp-01.#{domain}", :memory => "512", :ip => "192.168.2.21"},
-  { :hostname => "webapp-02.#{domain}", :memory => "512", :ip => "192.168.2.22"},
-  { :hostname => "webapp-03.#{domain}", :memory => "512", :ip => "192.168.2.23"},
-  { :hostname => "webapp-04.#{domain}", :memory => "512", :ip => "192.168.2.24"},
-  { :hostname => "webapp-05.#{domain}", :memory => "512", :ip => "192.168.2.25"},
+  { :hostname => "lb-01.#{domain}",     :run => "always", :ip => "192.168.2.10"},
+  { :hostname => "webapp-01.#{domain}", :ip => "192.168.2.21"},
+  { :hostname => "webapp-02.#{domain}", :ip => "192.168.2.22"},
+  { :hostname => "webapp-03.#{domain}", :ip => "192.168.2.23"},
+  { :hostname => "webapp-04.#{domain}", :ip => "192.168.2.24"},
+  { :hostname => "webapp-05.#{domain}", :ip => "192.168.2.25"},
 ]
 
 groups = {
@@ -30,9 +34,10 @@ Vagrant.configure(2) do |config|
   nodes.each do |node|
     # Set the vars
     hostname = node[:hostname]
-    memory = node[:memory]
     ip = node[:ip]
-    
+    memory = node[:memory] || "512" # set 512 as default if nothing else is set
+    run = node[:run] || "once" # set to provision once if nothing else is set
+
     # Add the extra_vars with hostname => ip
     hostname_ip[:ip] << node
     #
@@ -55,7 +60,7 @@ Vagrant.configure(2) do |config|
         end
 
         # ansible provisioner
-        config.vm.provision :ansible do |ansible|
+        config.vm.provision :ansible, run: run do |ansible|
           ansible.playbook = "provisioning/site.yml"
           ansible.groups = groups
           ansible.sudo = true

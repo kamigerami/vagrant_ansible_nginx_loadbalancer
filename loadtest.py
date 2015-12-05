@@ -5,6 +5,7 @@
 #
 import httplib, argparse
 from threading import Thread
+from collections import defaultdict
 
 def get_args():
     parser = argparse.ArgumentParser(description='Script runs threaded requests against given server n number of times')
@@ -31,7 +32,10 @@ get_args()
 host, runtime, threads = get_args()
 
 
+thread_count = 0
+
 def main():
+
     for i in range(threads):
         agent = Agent()
         agent.start()
@@ -41,10 +45,22 @@ class Agent(Thread):
         Thread.__init__(self)
 
     def run(self):
+        global thread_count
+        counter = defaultdict(int)
+        server_hit_count = []
         for i in range(runtime):
             conn = httplib.HTTPConnection(host)
             conn.request('HEAD', "/")
-            print conn.getresponse().getheader("X-Served-By")
+            resp_host = conn.getresponse().getheader("X-Served-By")
+            server_hit_count.append(resp_host)
+        for hosts in server_hit_count:
+            counter[hosts] += 1
+        thread_count += 1
+        for srv, cnt in counter.iteritems():
+            print "Thread nr: %d" %(thread_count)
+            print "Host: %s" %(srv)
+            print "Hit counter: %d" %(cnt)
+            print ""
 
 if __name__ == '__main__':
     main()
